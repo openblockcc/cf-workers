@@ -61,21 +61,29 @@ async function fetchHandler(e) {
     // cfworker will merge `//` to `/`
     path = urlObj.href.substr(urlObj.origin.length + PREFIX.length).replace(/^https?:\/+/, 'https://')
 
-    // releases archive
-    const exp1 = /^(?:https?:\/\/)?github\.com\/openblockcc\/.+?\/(?:releases|archive)\/.*$/i
+    if (req.cf.country === 'CN') {
+        // releases archive
+        const exp1 = /^(?:https?:\/\/)?github\.com\/openblockcc\/.+?\/(?:releases|archive)\/.*$/i
 
-    // raw.githubusercontent.com
-    const exp2 = /^(?:https?:\/\/)?raw\.(?:githubusercontent|github)\.com\/openblockcc\/.+?\/.+?\/.+$/i
+        // raw.githubusercontent.com
+        const exp2 = /^(?:https?:\/\/)?raw\.(?:githubusercontent|github)\.com\/.+?\/.+?\/.+?\/.+$/i
 
-    if (path.search(exp1) === 0) {
-        return httpHandler(req, path)
-    } else if (path.search(exp2) === 0) {
-        const newUrl = path.replace(/(?<=com\/.+?\/.+?)\/(.+?\/)/, '@$1')
-            .replace(/^(?:https?:\/\/)?raw\.(?:githubusercontent|github)\.com/, 'https://cdn.jsdelivr.net/gh')
+        // api.github.com/xx/{user}/openblockcc/*
+        const exp3 = /^(?:https?:\/\/)?api\.github\.com\/.+?\/openblockcc\/.+?\/.*$/i
 
-        return Response.redirect(newUrl, 302)
+        console.log(path);
+        console.log(path.search(exp3));
+
+        if (path.search(exp1) === 0 || path.search(exp3) === 0) {
+            return httpHandler(req, path)
+        } else if (path.search(exp2) === 0) {
+            const newUrl = path.replace(/(?<=com\/.+?\/.+?)\/(.+?\/)/, '@$1').replace(/^(?:https?:\/\/)?raw\.(?:githubusercontent|github)\.com/, 'https://cdn.jsdelivr.net/gh')
+            return Response.redirect(newUrl, 302)
+        } else {
+            return fetch(ASSET_URL) // return 404.html
+        }
     } else {
-        return fetch(ASSET_URL) // return 404.html
+        return Response.redirect(path, 302)
     }
 }
 
