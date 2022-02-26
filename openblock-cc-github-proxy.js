@@ -64,19 +64,22 @@ async function fetchHandler(e) {
     if (req.cf.country === 'CN') {
         // releases archive
         const exp1 = /^(?:https?:\/\/)?github\.com\/openblockcc\/.+?\/(?:releases|archive)\/.*$/i
+        
+        // releases atom
+        const exp2 = /^(?:https?:\/\/)?github\.com\/openblockcc\/.+?\/(?:releases|archive)\.atom.*?$/i
 
         // raw.githubusercontent.com
-        const exp2 = /^(?:https?:\/\/)?raw\.(?:githubusercontent|github)\.com\/.+?\/.+?\/.+?\/.+$/i
+        const exp3 = /^(?:https?:\/\/)?raw\.(?:githubusercontent|github)\.com\/.+?\/.+?\/.+?\/.+$/i
 
         // api.github.com/xx/{user}/openblockcc/*
-        const exp3 = /^(?:https?:\/\/)?api\.github\.com\/.+?\/openblockcc\/.+?\/.*$/i
+        const exp4 = /^(?:https?:\/\/)?api\.github\.com\/.+?\/openblockcc\/.+?\/.*$/i
 
         console.log(path);
         console.log(path.search(exp3));
 
-        if (path.search(exp1) === 0 || path.search(exp3) === 0) {
+        if (path.search(exp1) === 0 || path.search(exp2) === 0 || path.search(exp4) === 0) {
             return httpHandler(req, path)
-        } else if (path.search(exp2) === 0) {
+        } else if (path.search(exp3) === 0) {
             const newUrl = path.replace(/(?<=com\/.+?\/.+?)\/(.+?\/)/, '@$1').replace(/^(?:https?:\/\/)?raw\.(?:githubusercontent|github)\.com/, 'https://cdn.jsdelivr.net/gh')
             return Response.redirect(newUrl, 302)
         } else {
