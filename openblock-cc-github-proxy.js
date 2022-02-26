@@ -74,19 +74,20 @@ async function fetchHandler(e) {
         // api.github.com/xx/{user}/openblockcc/*
         const exp4 = /^(?:https?:\/\/)?api\.github\.com\/.+?\/openblockcc\/.+?\/.*$/i
 
-        console.log(path);
-        console.log(path.search(exp3));
-
         if (path.search(exp1) === 0 || path.search(exp2) === 0 || path.search(exp4) === 0) {
             return httpHandler(req, path)
         } else if (path.search(exp3) === 0) {
             const newUrl = path.replace(/(?<=com\/.+?\/.+?)\/(.+?\/)/, '@$1').replace(/^(?:https?:\/\/)?raw\.(?:githubusercontent|github)\.com/, 'https://cdn.jsdelivr.net/gh')
             return Response.redirect(newUrl, 302)
         } else {
-            return fetch(ASSET_URL) // return 404.html
+            return fetch(ASSET_URL) // return 400.html
         }
     } else {
-        return Response.redirect(path, 302)
+        if(path){
+            return Response.redirect(path, 302)
+        } else {
+            return Response.redirect(ASSET_URL, 302) // return 400.html
+        }
     }
 }
 
