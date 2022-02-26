@@ -3,7 +3,7 @@
 /**
  * static files (404.html, sw.js, conf.js)
  */
-const ASSET_URL = 'https://hunshcn.github.io/gh-proxy/'
+const ASSET_URL = 'https://openblockcc.github.io/cf-workers/400'
 
 const PREFIX = '/'
 
